@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>项目DEMO墙</title>
+<style>
+  :root {
+    --bg: #f5f7fb;
+    --bg-grid: #eef1f8;
+    --panel: #ffffff;
+    --text: #1a1f36;
+    --text-soft: #5a6178;
+    --text-muted: #8a90a6;
+    --border: #e6e9f2;
+    --accent: #4f6ef7;
+    --accent-2: #7c5cff;
+    --shadow: 0 6px 24px rgba(20, 25, 60, 0.06), 0 2px 6px rgba(20, 25, 60, 0.04);
+    --radius: 18px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1220;
+      --bg-grid: #141929;
+      --panel: #171c2e;
+      --text: #e8ecf5;
+      --text-soft: #b3bacd;
+      --text-muted: #7d859e;
+      --border: #262c44;
+      --accent: #7c9bff;
+      --accent-2: #a48bff;
+      --shadow: 0 6px 24px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* 背景网格点缀 */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 1px 1px, var(--bg-grid) 1px, transparent 0);
+    background-size: 28px 28px;
+    opacity: 0.55;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* 顶部装饰光晕 */
+  body::after {
+    content: "";
+    position: fixed;
+    top: -200px;
+    right: -150px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+    opacity: 0.18;
+    filter: blur(40px);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 56px 40px 80px;
+  }
+
+  /* ============ Header ============ */
+  header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  .brand h1 {
+    margin: 0 0 8px;
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .brand p {
+    margin: 0;
+    color: var(--text-soft);
+    font-size: 15px;
+  }
+
+  .search-box {
+    position: relative;
+  }
+
+  .search-box input {
+    width: 280px;
+    max-width: 100%;
+    padding: 11px 14px 11px 40px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--panel);
+    color: var(--text);
+    font-size: 14px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+
+  .search-box input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(79, 110, 247, 0.12);
+  }
+
+  .search-box::before {
+    content: "";
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a90a6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.35-4.35'/></svg>");
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+
+  /* ============ Categories ============ */
+  .categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+
+  .chip {
+    padding: 7px 16px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text-soft);
+    border-radius: 999px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .2s;
+    user-select: none;
+  }
+
+  .chip:hover { color: var(--accent); border-color: var(--accent); }
+
+  .chip.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff;
+    border-color: transparent;
+  }
+
+  /* ============ Grid ============ */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 22px;
+  }
+
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: var(--shadow);
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow: 0 14px 36px rgba(79, 110, 247, 0.18), 0 4px 12px rgba(20, 25, 60, 0.06);
+  }
+
+  .thumb {
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 52px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .thumb::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.15), transparent 60%);
+    pointer-events: none;
+  }
+
+  .thumb .thumb-emoji {
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  .thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .thumb-gradient {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    inset: 0;
+  }
+
+  .card-body {
+    padding: 18px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .card-title {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0 0 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .card-title .arrow {
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity .2s, transform .2s;
+    color: var(--accent);
+    font-size: 18px;
+  }
+
+  .card:hover .card-title .arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .card-desc {
+    margin: 0 0 14px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--text-soft);
+    flex: 1;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: 11.5px;
+    padding: 3px 9px;
+    border-radius: 6px;
+    background: rgba(79, 110, 247, 0.12);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .date {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-left: auto;
+  }
+
+  .status {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #3ecf8e;
+    margin-right: 6px;
+    box-shadow: 0 0 0 3px rgba(62, 207, 142, 0.18);
+  }
+
+  .status.dev { background: #f7b955; box-shadow: 0 0 0 3px rgba(247, 185, 85, 0.18); }
+  .status.archived { background: #8a90a6; box-shadow: 0 0 0 3px rgba(138, 144, 166, 0.18); }
+
+  .empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* ============ Footer ============ */
+  footer {
+    margin-top: 60px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  @media (max-width: 640px) {
+    .page { padding: 36px 20px 60px; }
+    .brand h1 { font-size: 26px; }
+    .search-box input { width: 100%; }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand">
+        <h1>项目DEMO墙</h1>
+      </div>
+      <div class="search-box">
+        <input id="search" type="text" placeholder="搜索 demo 名称 / 描述…" />
+      </div>
+    </header>
+
+    <div class="categories" id="categories"></div>
+
+    <div class="grid" id="grid"></div>
+
+    <footer>
+      © <span id="year"></span> Product Team · Built with ♥
+    </footer>
+  </div>
+
+<script>
+/* ============ 在这里添加 / 修改你的 Demo ============ */
+const DEMOS = [
+  {
+    title: "LUT 滤镜 Demo",
+    desc: "在线图片 LUT 色彩滤镜工具，支持多种 ZINK 风格预设，本地上传图片即可实时预览调色效果并保存。",
+    url: "https://shengnanxiang.github.io/lut-demo/",
+    category: "图像工具",
+    tag: "LUT",
+    emoji: "🎨",
+    gradient: "linear-gradient(135deg, #ff6b6b 0%, #ffa502 50%, #7bed9f 100%)",
+    image: "assets/lut-demo.jpg",
+    status: "live",
+    date: "2026-07"
+  },
+  {
+    title: "用AI协助产品定义",
+    desc: "从「自嗨式定义」到「让自己看到」—— 用AI协助产品定义的实践与感受演讲展示。",
+    url: "https://shengnanxiang.github.io/shareonai/",
+    category: "演讲展示",
+    tag: "AI",
+    emoji: "",
+    gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    image: "assets/shareonai.jpg",
+    status: "live",
+    date: "2026-07"
+  }
+];
+
+/* ======================================================= */
+
+const grid = document.getElementById("grid");
+const categoriesEl = document.getElementById("categories");
+const searchEl = document.getElementById("search");
+document.getElementById("year").textContent = new Date().getFullYear();
+
+// 提取分类
+const cats = ["全部", ...new Set(DEMOS.map(d => d.category))];
+let activeCat = "全部";
+
+cats.forEach(c => {
+  const el = document.createElement("div");
+  el.className = "chip" + (c === activeCat ? " active" : "");
+  el.textContent = c;
+  el.onclick = () => {
+    activeCat = c;
+    document.querySelectorAll(".chip").forEach(ch => ch.classList.remove("active"));
+    el.classList.add("active");
+    render();
+  };
+  categoriesEl.appendChild(el);
+});
+
+function statusLabel(s) {
+  if (s === "dev") return "开发中";
+  if (s === "archived") return "已归档";
+  return "已上线";
+}
+
+function render() {
+  const q = searchEl.value.trim().toLowerCase();
+  const list = DEMOS.filter(d => {
+    if (activeCat !== "全部" && d.category !== activeCat) return false;
+    if (!q) return true;
+    return d.title.toLowerCase().includes(q)
+      || d.desc.toLowerCase().includes(q)
+      || (d.tag || "").toLowerCase().includes(q);
+  });
+
+  if (list.length === 0) {
+    grid.innerHTML = '<div class="empty">没有找到匹配的 demo 🫥</div>';
+    return;
+  }
+
+  grid.innerHTML = list.map(d => {
+    const thumbInner = d.image
+      ? `<img class="thumb-img" src="${d.image}" alt="${escapeHtml(d.title)}" />`
+      : `<div class="thumb-gradient" style="background:${d.gradient}"><span class="thumb-emoji">${d.emoji || "✨"}</span></div>`;
+    return `
+    <a class="card" href="${d.url}" target="_blank" rel="noopener">
+      <div class="thumb">
+        ${thumbInner}
+      </div>
+      <div class="card-body">
+        <h3 class="card-title">
+          <span><span class="status ${d.status || ""}"></span>${escapeHtml(d.title)}</span>
+          <span class="arrow">↗</span>
+        </h3>
+        <p class="card-desc">${escapeHtml(d.desc)}</p>
+        <div class="card-meta">
+          <span class="tag">${escapeHtml(d.tag || d.category)}</span>
+          <span class="date">${escapeHtml(statusLabel(d.status))} · ${escapeHtml(d.date || "")}</span>
+        </div>
+      </div>
+    </a>`;
+  }).join("");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[m]));
+}
+
+searchEl.addEventListener("input", render);
+render();
+</script>
+</body>
+</html>
